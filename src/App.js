@@ -1,12 +1,14 @@
 import "./App.css";
 import { useState } from "react";
-const axios = require("axios").default;
+import axios from "axios";
 
 function App() {
   const [state, setState] = useState({
     name: "",
     risk: "",
   });
+  const [riskrating, setRiskrating] = useState({});
+  const [display, setDisplay] = useState(false);
   function handleChange(e) {
     // console.log(e.target.value);
     // setState({ Name: e.target.value, risk: e.target.value });
@@ -17,28 +19,20 @@ function App() {
     });
     console.log(state);
   }
-  async function handleSubmit(e) {
-    fetch(
-      "https://riskrating.azurewebsites.net/api/riskRatingApi?code=Ur7ZxfXwicGfa3Gfhqv9RLCipQev2VyDMTUTxuGmFd6QAzFuPunD7g==",
-      { Method: "POST" }
-    )
-      .then((response) => response.json())
-      .then((data) => console.log(data));
-    // try {
-    //   axios
-    //     .post("https://riskrating.azurewebsites.net/api/riskRatingApi?", {
-    //       name: state.name,
-    //       risk: state.risk,
-    //     })
-    //     .then(function (response) {
-    //       console.log(response);
-    //     })
-    //     .catch(function (error) {
-    //       console.log(error);
-    //     });
-    // } catch (err) {
-    //   console.log(err);
-    // }
+  async function handleSubmit() {
+    setDisplay(!display);
+    try {
+      await axios({
+        method: "post",
+        url: "https://riskrating.azurewebsites.net/api/riskRatingApi?",
+        data: {
+          name: state.name,
+          risk: state.risk,
+        },
+      }).then((data) => setRiskrating(data.data));
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
@@ -74,7 +68,12 @@ function App() {
       </div>
 
       <div id="answer">
-        <p>Answer will be displayed here</p>
+        <p>
+          {!display && "Answer will be displayed here"}
+          {riskrating &&
+            display &&
+            `Your risk rating is ${riskrating.riskrating}`}
+        </p>
       </div>
     </div>
   );
