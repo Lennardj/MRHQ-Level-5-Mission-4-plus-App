@@ -29,7 +29,10 @@ function App() {
           name: state.name,
           risk: state.risk,
         },
-      }).then((data) => setRiskrating(data.data));
+      }).then((data) => {
+        console.log(data);
+        setRiskrating(data.data);
+      });
     } catch (err) {
       console.log(err);
     }
